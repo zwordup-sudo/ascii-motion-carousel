@@ -1,0 +1,16 @@
+{
+  "images": 20,
+  "sourceSize": "1600x1200 (tres patrones alternados)",
+  "columns": 300,
+  "output": 2048,
+  "elapsedMs": 14368,
+  "gifBytes": 2837347,
+  "nodeVersion": "v22.23.5",
+  "browserVersion": "158.0.8127.18",
+  "workerPeakRgbaBytes": 33554432,
+  "cacheBudgetBytes": 16777216,
+  "peakMainJsHeapBytes": 25089484,
+  "ticks": 880,
+  "maxGapMs": 40.69999999925494,
+  "memoryNote": "RGBA contabiliza pendiente+entrante. Heap CDP solo del hilo principal; excluye worker, backing stores Canvas/bitmap y memoria interna del códec. No es memoria total del navegador."
+}

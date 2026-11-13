@@ -1,0 +1,37 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1024" height="1024" viewBox="0 0 1024 1024">
+  <title>Referencia fija propia: faro, costa, contornos finos y carta de color</title>
+  <defs>
+    <linearGradient id="sky" x2="0" y2="1"><stop stop-color="#507da8"/><stop offset="1" stop-color="#e2be83"/></linearGradient>
+    <linearGradient id="sea" x2="0" y2="1"><stop stop-color="#4d869a"/><stop offset="1" stop-color="#102e4c"/></linearGradient>
+    <linearGradient id="tower"><stop stop-color="#657789"/><stop offset=".5" stop-color="#e4e4d9"/><stop offset="1" stop-color="#a7afab"/></linearGradient>
+    <linearGradient id="gray"><stop stop-color="#080808"/><stop offset="1" stop-color="#f8f8f8"/></linearGradient>
+  </defs>
+  <path fill="url(#sky)" d="M0 0h1024v640H0z"/>
+  <circle cx="250" cy="230" r="104" fill="#eccc7c"/>
+  <path d="M0 450 180 260 360 460 545 340 790 520 1024 370V650H0Z" fill="#647c84"/>
+  <path d="m0 525 180-190 180 190 185-110 245 175 234-150" fill="none" stroke="#b6b8a0" stroke-width="4"/>
+  <path fill="url(#sea)" d="M0 570h1024v340H0z"/>
+  <g fill="none" stroke="#90afaf" stroke-width="3" opacity=".85">
+    <path d="M0 610h220m60 0h150m-360 30h250m270 0h280M0 700h130m50 0h210m240 30h320M20 780h280m30 15h170m250 50h230M0 870h300"/>
+  </g>
+  <path d="M290 900 375 715 585 680 740 735 880 900Z" fill="#293e37"/>
+  <path d="m365 785 82-54 110-24 106 46 85 105" fill="none" stroke="#6d7860" stroke-width="12"/>
+  <path d="M453 735 485 315h112l31 420Z" fill="url(#tower)" stroke="#263d48" stroke-width="5"/>
+  <path d="M479 353h124l-3-62H482Z" fill="#263642"/>
+  <path d="m468 291 73-59 73 59Z" fill="#b44e40" stroke="#503b3c" stroke-width="4"/>
+  <path d="M495 307h30v30h-30zm49 0h34v30h-34z" fill="#f3d58c"/>
+  <g fill="#29475a"><path d="M515 414h34v51h-34zm-5 127h38v57h-38zm-3 126h44v68h-44z"/></g>
+  <g fill="none" stroke="#a0aaa3" stroke-width="3"><path d="m480 400 118 0m-123 108h127m-136 110h145M488 350 463 730"/></g>
+  <path d="M650 755v-74h118v74Z" fill="#bba07b" stroke="#38433e" stroke-width="4"/>
+  <path d="m636 681 73-57 73 57Z" fill="#a85541"/>
+  <path d="M670 703h22v26h-22zm42-1h32v53h-32z" fill="#263e43"/>
+  <path d="M815 687V348m-39 54 79-17m-63 77 56-14" stroke="#273d48" stroke-width="3"/>
+  <path d="M0 918h1024v106H0z" fill="#111923"/>
+  <g stroke="#17202b" stroke-width="3">
+    <path d="M24 938h112v40H24z" fill="#d83c35"/><path d="M136 938h112v40H136z" fill="#34b66b"/>
+    <path d="M248 938h112v40H248z" fill="#3677d5"/><path d="M360 938h112v40H360z" fill="#dab444"/>
+    <path d="M472 938h112v40H472z" fill="#3bb8c7"/><path d="M584 938h112v40H584z" fill="#b95eaf"/>
+    <path d="M720 938h280v40H720z" fill="url(#gray)"/>
+  </g>
+  <g fill="#a9b7bd" font-family="monospace" font-size="16"><text x="24" y="1006">FARO / COSTA — REFERENCIA LOCAL V0.4</text></g>
+</svg>

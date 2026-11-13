@@ -1,0 +1,22 @@
+[
+  {
+    "filter": "Invert Character Density",
+    "meanChannelChange": 57.33733333333333
+  },
+  {
+    "filter": "Auto Contrast & Levels",
+    "meanChannelChange": 24.887916666666666
+  },
+  {
+    "filter": "Dithering de intensidades",
+    "meanChannelChange": 16.332416666666667
+  },
+  {
+    "filter": "Gamma perceptual",
+    "meanChannelChange": 73.88441666666667
+  },
+  {
+    "filter": "Edge Enhancement",
+    "meanChannelChange": 3.855916666666667
+  }
+]
