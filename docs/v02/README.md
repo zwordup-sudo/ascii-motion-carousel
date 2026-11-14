@@ -65,7 +65,7 @@ El escenario importa **20 archivos de 1600 × 1200**, con tres patrones sintéti
 
 El escenario de cancelación espera que se haya enviado al menos un fotograma y comprueba que se puede exportar nuevamente. La regresión de debounce congela el reloj y comprueba que solo termina dibujándose la última densidad. Los errores encontrados durante desarrollo (hinting y sincronización de pruebas con el render ahora asíncrono) se corrigieron antes de estas comprobaciones finales.
 
-Firefox y Safari siguen pendientes de validación manual. El GIF no se ha publicado en GitHub ni se ha hecho push.
+Esta sección conserva la comprobación histórica en Chromium. La validación multi-motor posterior está en la [matriz de compatibilidad](../compatibility.md); Safari/iOS y las builds de marca siguen pendientes de validación manual.
 
 ## Demostración de alta densidad
 

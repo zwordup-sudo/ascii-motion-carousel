@@ -106,22 +106,35 @@ test('rechaza archivos inválidos o dañados, acepta válidos del mismo lote y l
   await expect(page.getByRole('button', { name: 'Exportar GIF' })).toBeDisabled();
 });
 
-test('el editor se adapta a móvil sin desbordamiento horizontal', async ({ page }) => {
-  await page.setViewportSize({ width: 390, height: 844 });
+test('el editor se adapta a escritorio, tablet y móvil sin desbordamiento horizontal', async ({ page }) => {
   await importThree(page);
-  expect(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth)).toBe(true);
-  await expect(page.getByLabel('Modo de color')).toBeVisible();
+  for (const [width, height] of [[1440, 1000], [1024, 768], [768, 1024], [390, 844]]) {
+    await page.setViewportSize({ width, height });
+    await expect.poll(() => page.evaluate(() => document.documentElement.scrollWidth <= innerWidth), { message: `${width}×${height}` }).toBe(true);
+    await expect(page.getByLabel('Modo de color')).toBeVisible();
+    await expect(page.getByTestId('main-preview')).toBeVisible();
+  }
 });
 
-test('importa una carpeta y respeta el límite de imágenes', async ({ page }, testInfo) => {
+test('importa una carpeta y respeta el límite de imágenes', async ({ page, browserName }, testInfo) => {
   const files = await fixtures(page);
   const folder = testInfo.outputPath('album');
   await mkdir(join(folder, 'subcarpeta'), { recursive: true });
   for (const [i, file] of files.entries()) {
     await writeFile(join(folder, i === 2 ? 'subcarpeta' : '', file.name), Buffer.from(file.data, 'base64'));
   }
-  await page.getByLabel('Seleccionar carpeta', { exact: true }).setInputFiles(folder);
-  await expect(page.getByTestId('frame-counter')).toHaveText('1 / 3');
+  const directoryInput = page.getByLabel('Seleccionar carpeta', { exact: true });
+  await expect(directoryInput).toHaveAttribute('webkitdirectory', '');
+  if (browserName === 'chromium') {
+    await directoryInput.setInputFiles(folder);
+    await expect(page.getByTestId('frame-counter')).toHaveText('1 / 3');
+  } else {
+    // Los protocolos de Firefox/WebKit de Playwright no expanden carpetas recursivas; el selector real
+    // del navegador sí. Se valida aquí la carga múltiple equivalente y se deja constancia de la limitación.
+    testInfo.annotations.push({ type: 'browser-limitation', description: `Playwright no automatiza la carpeta recursiva en ${browserName}; se usa carga múltiple equivalente.` });
+    await page.getByLabel('Seleccionar imágenes', { exact: true }).setInputFiles(files.map(file => ({ name: file.name, mimeType: file.mimeType, buffer: Buffer.from(file.data, 'base64') })));
+    await expect(page.getByTestId('frame-counter')).toHaveText('1 / 3');
+  }
   const repeated = Array.from({ length: 20 }, (_, i) => ({ name: `copy-${i}.png`, mimeType: 'image/png', buffer: Buffer.from(files[0].data, 'base64') }));
   await page.getByLabel('Seleccionar imágenes', { exact: true }).setInputFiles(repeated);
   await expect(page.getByRole('alert')).toContainText('Máximo 20 imágenes');

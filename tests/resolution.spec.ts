@@ -117,6 +117,39 @@ test('300 columnas retienen bandas de cuatro píxeles sin prerreducir la fuente 
   expect(bands.filter((value, i) => i % 2 === 1 && value === 0)).toHaveLength(150);
 });
 
+test('imagen grande 3000×2000 a 300 columnas conserva la cuadrícula y exporta GIF', async ({ page }, testInfo) => {
+  test.setTimeout(120000);
+  const [file] = await fixtures(page, 3000, 2000);
+  await page.getByLabel('Seleccionar imágenes', { exact: true }).setInputFiles({ name: 'large-3000x2000.png', mimeType: file.mimeType, buffer: Buffer.from(file.data, 'base64') });
+  await expect(page.getByTestId('frame-counter')).toHaveText('1 / 1');
+  await page.getByRole('button', { name: '300 columnas', exact: true }).click();
+  await page.getByLabel('Resolución de exportación').selectOption('auto');
+  await waitForRender(page, 300);
+  const preview = await page.locator('canvas').evaluate(element => {
+    const canvas = element as HTMLCanvasElement;
+    return { width: canvas.width, height: canvas.height, rows: Number(canvas.dataset.rows), columns: Number(canvas.dataset.columns) };
+  });
+  expect(preview).toMatchObject({ width: 2048, height: 2048, columns: 300 });
+  expect(preview.rows).toBeGreaterThan(0);
+  await page.getByRole('button', { name: 'Exportar GIF' }).click();
+  const { buffer, gif } = await downloadGif(page, testInfo);
+  expect([gif.width, gif.height]).toEqual([2048, 2048]);
+  expect(gif.frames).toHaveLength(1);
+  expect(buffer.byteLength).toBeLessThan(32 * 1024 * 1024);
+  const frame = decodeFrames(buffer)[0];
+  const samples = Array.from({ length: 2000 }, (_, i) => {
+    const pixel = (i * 7919) % (2048 * 2048);
+    return { pixel, rgb: Array.from(frame.data.slice(pixel * 4, pixel * 4 + 3)) };
+  });
+  const error = await page.locator('canvas').evaluate((element, samples) => {
+    const canvas = element as HTMLCanvasElement;
+    const pixels = canvas.getContext('2d')!.getImageData(0, 0, canvas.width, canvas.height).data;
+    return samples.reduce((sum, sample) => sum + sample.rgb.reduce((delta, value, c) => delta + Math.abs(value - pixels[sample.pixel * 4 + c]), 0), 0) / (samples.length * 3);
+  }, samples);
+  expect(error).toBeLessThan(5);
+  await testInfo.attach('large-image.json', { body: JSON.stringify({ ...preview, gifBytes: buffer.byteLength, meanChannelError: error }), contentType: 'application/json' });
+});
+
 test('retrato, rampa detallada y ajustes existentes conservados entre presets', async ({ page }) => {
   const [file] = await fixtures(page, 600, 1200);
   await page.getByLabel('Seleccionar imágenes', { exact: true }).setInputFiles({ name: 'portrait.png', mimeType: file.mimeType, buffer: Buffer.from(file.data, 'base64') });
@@ -189,7 +222,7 @@ test('debounce descarta cambios rápidos y no dibuja una densidad obsoleta', asy
   await waitForRender(page, 300);
 });
 
-test('20 imágenes a 300 columnas: exportación acotada y navegador receptivo', async ({ page }, testInfo) => {
+test('20 imágenes a 300 columnas: exportación acotada y navegador receptivo', async ({ page, browserName }, testInfo) => {
   test.setTimeout(180000);
   const files = await fixtures(page, 1600, 1200);
   await page.getByLabel('Seleccionar imágenes', { exact: true }).setInputFiles(Array.from({ length: 20 }, (_, i) => ({ name: `${i}-${files[i % 3].name}`, mimeType: files[i % 3].mimeType, buffer: Buffer.from(files[i % 3].data, 'base64') })));
@@ -197,14 +230,15 @@ test('20 imágenes a 300 columnas: exportación acotada y navegador receptivo', 
   await page.getByRole('button', { name: '300 columnas', exact: true }).click();
   await page.getByLabel('Resolución de exportación').selectOption('auto');
   await waitForRender(page, 300);
-  const session = await page.context().newCDPSession(page);
-  await session.send('Performance.enable');
+  // CDP solo existe en Chromium; Firefox y WebKit siguen validando recursos y respuesta.
+  const session = browserName === 'chromium' ? await page.context().newCDPSession(page) : null;
+  if (session) await session.send('Performance.enable');
   let peakMainJsHeap = 0;
-  const sampler = setInterval(() => {
+  const sampler = session ? setInterval(() => {
     void session.send('Performance.getMetrics').then(({ metrics }) => {
       peakMainJsHeap = Math.max(peakMainJsHeap, metrics.find(m => m.name === 'JSHeapUsedSize')?.value ?? 0);
     }).catch(() => {});
-  }, 100);
+  }, 100) : null;
   await page.evaluate(() => {
     const probe = { ticks: 0, maxGap: 0, last: performance.now(), id: 0 };
     probe.id = window.setInterval(() => { const now = performance.now(); probe.maxGap = Math.max(probe.maxGap, now - probe.last); probe.last = now; probe.ticks++; }, 16);
@@ -228,12 +262,14 @@ test('20 imágenes a 300 columnas: exportación acotada y navegador receptivo', 
     const peakRgba = Number(await page.getByRole('region', { name: 'Resultado de exportación' }).getAttribute('data-peak-rgba-bytes'));
     expect(peakRgba).toBe(2 * 2048 * 2048 * 4);
     const report = { images: 20, sourceSize: '1600x1200 (tres patrones alternados)', columns: 300, output: 2048, elapsedMs, gifBytes: buffer.byteLength,
-      nodeVersion: process.version, browserVersion: page.context().browser()?.version(),
-      workerPeakRgbaBytes: peakRgba, cacheBudgetBytes: 16 * 1024 * 1024, peakMainJsHeapBytes: peakMainJsHeap,
-      ...probe, memoryNote: 'RGBA contabiliza pendiente+entrante. Heap CDP solo del hilo principal; excluye worker, backing stores Canvas/bitmap y memoria interna del códec. No es memoria total del navegador.' };
+      nodeVersion: process.version, browserName, browserVersion: page.context().browser()?.version(),
+      workerPeakRgbaBytes: peakRgba, cacheBudgetBytes: 16 * 1024 * 1024, peakMainJsHeapBytes: session ? peakMainJsHeap : null,
+      ...probe, memoryNote: session
+        ? 'RGBA contabiliza pendiente+entrante. Heap CDP solo del hilo principal; excluye worker, backing stores Canvas/bitmap y memoria interna del códec. No es memoria total del navegador.'
+        : 'Heap CDP no disponible fuera de Chromium. Se validan en su lugar el presupuesto RGBA, el GIF, la respuesta del hilo principal y la liberación de recursos.' };
     console.log('Carousel stress:', JSON.stringify(report));
     await testInfo.attach('v02-stress.json', { body: JSON.stringify(report, null, 2), contentType: 'application/json' });
     if (process.env.GENERATE_V02_REPORT === '1') await writeFile('docs/v02/performance.json', JSON.stringify(report, null, 2) + '\n');
     if (process.env.GENERATE_V04_ARTIFACTS === '1') await writeFile('docs/v04/performance.json', JSON.stringify(report, null, 2) + '\n');
-  } finally { clearInterval(sampler); await session.detach(); }
+  } finally { if (sampler) clearInterval(sampler); await session?.detach(); }
 });

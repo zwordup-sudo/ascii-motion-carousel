@@ -81,7 +81,7 @@ Un **algoritmo nuevo**, a diferencia de una paleta, necesita su módulo puro, el
 - Se conservan caché de renders de 16 MiB, máximo 2048 filas, fuentes temporales de hasta 2048 px, GIF máximo 32 MiB y worker secuencial de dos RGBA.
 - El cache de métricas tipográficas se limita a 16 entradas. El muestreo Braille puede ocupar hasta 18,75 MiB en un retrato extremo de 300 columnas / 2048 filas, frente a los 9,375 MiB del muestreo convencional. Las máscaras de emoji son temporales por render y se liberan al terminar/cancelar.
 - A 300 columnas y baja resolución los puntos pueden ser ilegibles; el aviso de resolución sigue vigente. Dithering aumenta textura, no garantiza mejoras en todas las imágenes; prueba distintos umbrales.
-- Se requiere `Intl.Segmenter`, Canvas, FontFaceSet y Web Workers de navegadores modernos. Chromium está automatizado; Firefox/Safari y grafemas Custom arbitrarios requieren validación manual. Un glifo fuera de las fuentes disponibles puede aparecer como sustitución; no existe cobertura Unicode universal.
+- Se requiere `Intl.Segmenter`, Canvas, FontFaceSet y Web Workers de navegadores modernos. Chromium, Firefox y WebKit están automatizados; Safari/iOS, builds de marca y grafemas Custom arbitrarios requieren validación manual. Consulta la [matriz de compatibilidad](../compatibility.md). Un glifo fuera de las fuentes disponibles puede aparecer como sustitución; no existe cobertura Unicode universal.
 - Los presupuestos de buffers y heap JS no son RAM total del navegador. Se mantienen las limitaciones de decodificación y paletas de V0.2.
 
 ## Pruebas y demo
