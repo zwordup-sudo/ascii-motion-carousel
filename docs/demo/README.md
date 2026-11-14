@@ -4,4 +4,4 @@ Tres figuras generadas localmente (círculo lima, triángulo violeta y portal ci
 
 ![Carrusel ASCII animado](./ascii-motion.gif)
 
-Regenerar el GIF y la captura del editor con `npm run demo` después de instalar Chromium para Playwright. El test decodifica el archivo descargado y comprueba dimensiones, tiempos, bucle y contenido.
+Regenerar el GIF y la captura del editor con `npm run demo` después de instalar los navegadores de Playwright. El test decodifica el archivo descargado y comprueba dimensiones, tiempos, bucle y contenido.

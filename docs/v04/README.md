@@ -22,7 +22,7 @@ Referencia fija propia: un faro y una costa con gradientes, ventanas, mástil, t
 | [Muestra ASCII literal](./ascii-sample.txt) | Fila central generada con caracteres Unicode reales |
 | [Métricas](./metrics.json) | Datos observados, parámetros, SHA256 de la entrada y versión del navegador |
 
-Las condiciones base son Shading / 300 columnas / 152 filas / 2048 × 2048, contraste 1,15, brillo 0, tamaño 1. V0.4 utiliza gamma1, niveles/bordes/inversión apagados y dithering de densidad activo (nuevo valor inicial). La comparación integrada reconstruye V0.3; el test confirma que sus píxeles coinciden con la captura histórica (MAE prácticamente cero).
+Las condiciones base son Shading / 300 columnas / 152 filas / 2048 × 2048, contraste 1,15, brillo 0, tamaño 1. V0.4 utiliza gamma1, niveles/bordes/inversión apagados y dithering de densidad activo (nuevo valor inicial). La comparación integrada reconstruye V0.3; en Chromium el test confirma que sus píxeles coinciden con la captura histórica (MAE prácticamente cero). Firefox y WebKit usan una tolerancia acotada por su distinto antialiasing; consulta la [matriz de compatibilidad](../compatibility.md).
 
 ### Resultados en la referencia fija
 
@@ -40,7 +40,7 @@ Esto demuestra una mejora sobre **nuestro V0.3 en esta ilustración**, no superi
 
 ### Comprobaciones finales
 
-Node22.23.5, Chromium158.0.8127.18, Windows:
+Node22.23.5, Chromium158.0.8127.18, Windows. Esta sección conserva la ejecución original en Chromium; la validación multi-motor posterior está en la [matriz de compatibilidad](../compatibility.md):
 
 | Comprobación ejecutada | Resultado observado |
 | --- | --- |
@@ -130,7 +130,7 @@ Los presets son parches de los mismos controles, nunca otro algoritmo, y no camb
 - Abrir la comparación añade hasta48MiB de backing stores a2048, además del Canvas principal. Se libera al cerrar/exportar. Decodificar una fuente puede tener picos transitorios.
 - Dithering y mayor cobertura aumentan entropía y peso GIF. La regresión de20 imágenes Standard/300/2048 pasó de~2,84MB en V0.3 a~8,62MB en la ejecución V0.4 de desarrollo; sigue dentro del límite. Reduce resolución, imágenes o dithering si el archivo resulta pesado.
 - Estas cifras son presupuestos de buffers, no RAM total del navegador. La cuantización GIF puede perder matices y añadir error; el archivo decodificado se compara con el Canvas, no solo con el aspecto del elemento HTML.
-- Chromium automatizado; Firefox/Safari, fotografías arbitrarias y todas las fuentes de respaldo siguen pendientes de validación manual. No se envían imágenes a servidores ni se hace publicación GitHub.
+- Chromium, Firefox y WebKit automatizados; WebKit no equivale a Safari y Safari/iOS, fotografías arbitrarias y todas las fuentes de respaldo siguen pendientes de validación manual. No se envían imágenes a servidores ni se hace publicación GitHub.
 
 ## Reproducción
 

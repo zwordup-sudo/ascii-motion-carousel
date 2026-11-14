@@ -10,7 +10,7 @@ Procesamiento 100 % local, sin cuentas, sin servidores y sin telemetría. Proyec
 
 <sub>GIF real generado por la aplicación con tres figuras sintéticas locales. 320 × 320 px, tres fotogramas de cinco segundos y bucle infinito.</sub>
 
-**Versión:** 1.0.0 · **Node:** 22.12–22.x · **Navegador validado:** Chromium actual · **Privacidad:** todo se procesa en el dispositivo.
+**Versión:** 1.0.0 · **Node:** 22.12–22.x · **Navegadores validados:** Chromium, Firefox y WebKit actuales en pruebas automatizadas · **Privacidad:** todo se procesa en el dispositivo.
 
 ## Características
 
@@ -45,7 +45,7 @@ Procesamiento 100 % local, sin cuentas, sin servidores y sin telemetría. Proyec
 Requisitos:
 
 - **Node.js 22.12 o posterior dentro de la rama 22** y npm.
-- Un navegador Chromium actual para la aplicación. Para ejecutar los E2E se instala Chromium mediante Playwright.
+- Un navegador actual con Canvas, `createImageBitmap`, Web Workers, `FontFaceSet` e `Intl.Segmenter`. La suite automatizada usa Chromium, Firefox y WebKit; WebKit no equivale a Safari.
 
 ```sh
 git clone https://github.com/zwordup-sudo/ascii-motion-carousel.git
@@ -91,7 +91,7 @@ La conversión mide la cobertura de caracteres reales, hace que Shading llene su
 
 [Diagnóstico frente a GitAscii](./docs/v04/DIAGNOSIS.md) · [Algoritmos, medidas y límites](./docs/v04/README.md) · [Comparación visual](./docs/v04/comparison.png)
 
-En la referencia fija del proyecto, el error RGB de seis muestras baja de **96,77 a 3,65**, y la luma media pasa de **29,87 a 110,67** frente a **113,69** del original. Es una mejora comprobada sobre V0.3, no una afirmación de superioridad universal frente a GitAscii. Su código GPL se inspeccionó únicamente para diagnóstico; no se copió.
+En Chromium, sobre la referencia fija del proyecto, el error RGB de seis muestras baja de **96,77 a 3,65**, y la luma media pasa de **29,87 a 110,67** frente a **113,69** del original. Firefox y WebKit conservan la mejora con cifras distintas por rasterización; consulta la [matriz de compatibilidad](./docs/compatibility.md). Es una mejora comprobada sobre V0.3, no una afirmación de superioridad universal frente a GitAscii. Su código GPL se inspeccionó únicamente para diagnóstico; no se copió.
 
 ## Estilos y True Braille
 
@@ -148,7 +148,7 @@ Si lo guardas en otra carpeta, adapta la ruta, por ejemplo `./assets/ascii-motio
 | No admitidos | GIF de entrada, SVG, HEIC, AVIF, vídeos y otros formatos |
 | Carpeta | `webkitdirectory` cuando el navegador lo soporte; incluye subcarpetas; selector múltiple como alternativa |
 | Orden inicial | Orden recibido del selector del navegador; no hay ordenación natural garantizada; reordena antes de exportar |
-| Navegadores | Chromium actual probado; se requieren Canvas, createImageBitmap, Web Workers, FontFaceSet e Intl.Segmenter. Firefox/Safari actuales no están verificados en esta entrega |
+| Navegadores | Chromium, Firefox y WebKit actuales probados de forma automatizada; se requieren Canvas, createImageBitmap, Web Workers, FontFaceSet e Intl.Segmenter. WebKit no es Safari: Safari/iOS y builds de marca no están verificados manualmente |
 | Portapapeles | Requiere contexto seguro (localhost o HTTPS); si falla, selecciona y copia el campo Markdown manualmente |
 | Salida | GIF 320 / 640 / 1024 px o automático hasta 2048 px; máximo 32 MiB; fondo negro opaco, sin sonido ni fundidos |
 | Color y fuente | El GIF reduce matices. Los tres estilos clásicos usan monospace del sistema; los nuevos incluyen DejaVu local para símbolos/Braille. Algunos grafemas Custom dependen de fuentes de respaldo del sistema |
@@ -165,7 +165,7 @@ La aplicación procesa las imágenes íntegramente en tu dispositivo. **La insta
 - No se envían imágenes, ajustes ni resultados a ningún servidor.
 - No hay claves, variables de entorno, cookies de sesión ni servicios de terceros en tiempo de ejecución.
 - Las preferencias de caracteres se guardan opcionalmente en `localStorage`; no se persisten imágenes.
-- La única red necesaria es la instalación de dependencias y, para desarrollo, la descarga de Chromium para las pruebas.
+- La única red necesaria es la instalación de dependencias y, para desarrollo, la descarga de los navegadores de prueba.
 
 ## Desarrollo
 
@@ -175,14 +175,14 @@ npm run build      # TypeScript estricto + build de producción
 npm run preview    # Sirve dist en 127.0.0.1:4173
 npm test           # Vitest
 npm run test:watch # Vitest en modo interactivo
-npm run test:e2e   # Playwright + Chromium
+npm run test:e2e   # Playwright + Chromium, Firefox y WebKit
 npm run demo       # Regenera docs/demo/ascii-motion.gif y docs/demo/editor.png
 ```
 
 Solo la primera vez:
 
 ```sh
-npx playwright install chromium
+npx playwright install chromium firefox webkit
 ```
 
 Para ejecutar los E2E contra `dist/`, después de compilar:
@@ -198,7 +198,7 @@ En shells POSIX, usa `E2E_PREVIEW=1 npm run test:e2e`.
 ### Pruebas
 
 - **Vitest**: pruebas del motor puro, histograma/percentiles, gamma, Sobel con rechazo de ruido, color/cobertura, difusión, presupuestos de atlas y presets.
-- **Playwright / Chromium**: pruebas del carrusel, importación, reordenación, intervalos, resolución, doce estilos, True Braille, referencia fija antes/después, métricas de color/contornos, filtros con reversión exacta, zoom sin modificar píxeles, hash ASCII entre resoluciones y GIF decodificado. La captura histórica V0.3 está omitida deliberadamente en la suite normal.
+- **Playwright / Chromium, Firefox y WebKit**: pruebas del carrusel, importación, reordenación, intervalos, resolución, doce estilos, True Braille, referencia fija antes/después, métricas de color/contornos, filtros con reversión exacta, zoom sin modificar píxeles, hash ASCII entre resoluciones, GIF decodificado, imagen grande, adaptación responsive y liberación de recursos. La captura histórica V0.3 está omitida deliberadamente en la suite normal. Los límites de automatización y las diferencias por motor están en la [matriz de compatibilidad](./docs/compatibility.md).
 - La demostración se genera con tres figuras sintéticas locales, sin imágenes externas. El GIF tiene tres fotogramas de cinco segundos y una duración total de quince segundos. `npm run demo` solo escribe artefactos en `docs/demo/`; las pruebas normales escriben en `test-results/`.
 
 ## Estructura
@@ -239,6 +239,7 @@ docs/v04/                  Diagnóstico previo, imágenes comparativas y métric
 - [Algoritmos, métricas y límites de fidelidad](./docs/v04/README.md)
 - [Guía de estilos, True Braille y atribuciones](./docs/v03/README.md)
 - [Resoluciones, rendimiento y límites](./docs/v02/README.md)
+- [Compatibilidad de navegadores](./docs/compatibility.md)
 - [Demostración local](./docs/demo/README.md)
 
 ## Estado del proyecto
