@@ -33,7 +33,7 @@ async function comparePreview(page: Page, buffer: ArrayBuffer) {
   return difference;
 }
 
-test.beforeEach(async ({ page }) => { await page.goto('/'); });
+test.beforeEach(async ({ page }) => { await page.goto('./'); });
 
 for (const style of CHARACTER_STYLES) {
   test(`${style.name}: caracteres reales y preview/GIF coherentes`, async ({ page }, info) => {

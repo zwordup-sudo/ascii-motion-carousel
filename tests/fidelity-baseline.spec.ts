@@ -4,7 +4,7 @@ import { selectStyle, waitForRender } from './helpers';
 
 test('captura diagnóstica V0.3 antes de implementar V0.4', async ({ page }) => {
   test.skip(process.env.CAPTURE_V03_BASELINE !== '1', 'Captura histórica explícita; no sobrescribir tras implementar.');
-  await page.goto('/');
+  await page.goto('./');
   await expect(page.locator('.version')).toContainText('V0.3');
   const svg = await readFile('tests/fixtures/reference-v04.svg', 'utf8');
   const source = await page.evaluate(async svg => {

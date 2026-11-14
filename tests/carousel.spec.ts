@@ -4,7 +4,7 @@ import { mkdir, readFile, writeFile } from 'node:fs/promises';
 import { join } from 'node:path';
 import { fixtures, importThree, waitForRender } from './helpers';
 
-test.beforeEach(async ({ page }) => { await page.goto('/'); });
+test.beforeEach(async ({ page }) => { await page.goto('./'); });
 
 test('exporta tres imágenes ASCII a un GIF autónomo para el README', async ({ page }, testInfo) => {
   const errors: string[] = [];

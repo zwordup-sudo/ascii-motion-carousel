@@ -11,7 +11,7 @@ async function ready(page: Page) {
   expect(await page.getByTestId('main-preview').evaluate(element => element.getAttribute('data-render-key') === element.getAttribute('data-request-key'))).toBe(true);
 }
 async function reference(page: Page) {
-  await page.goto('/');
+  await page.goto('./');
   await page.getByRole('button', { name: 'Cargar referencia local', exact: true }).click();
   await expect(page.getByTestId('frame-counter')).toHaveText('1 / 1');
   await page.getByRole('button', { name: '300 columnas', exact: true }).click();

@@ -2,7 +2,8 @@ import { defineConfig, devices } from '@playwright/test';
 
 const production = process.env.E2E_PREVIEW === '1';
 const port = production ? 4173 : 5173;
-const url = `http://127.0.0.1:${port}`;
+const basePath = production ? '/ascii-motion-carousel/' : '/';
+const url = `http://127.0.0.1:${port}${basePath}`;
 
 export default defineConfig({
   testDir: './tests',

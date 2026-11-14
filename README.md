@@ -66,7 +66,7 @@ npm run build
 npm run preview
 ```
 
-La vista previa de producción utiliza **http://127.0.0.1:4173**. No abras `dist/index.html` mediante `file://`: el editor necesita módulos y un worker servidos por HTTP local.
+La vista previa de producción utiliza **http://127.0.0.1:4173/ascii-motion-carousel/**, la misma ruta base que GitHub Pages. `npm run dev` sigue sirviendo la aplicación en la raíz. No abras `dist/index.html` mediante `file://`: el editor necesita módulos y un worker servidos por HTTP local.
 
 ## Crear tu primer carrusel
 

@@ -15,7 +15,7 @@ async function downloadGif(page: Page, testInfo: TestInfo) {
   return { buffer, gif: decode(buffer) };
 }
 
-test.beforeEach(async ({ page }) => { await page.goto('/'); });
+test.beforeEach(async ({ page }) => { await page.goto('./'); });
 
 for (const [columns, size] of [[16, 320], [48, 320], [96, 640], [160, 1024], [300, 2048]]) {
   test(`${columns} columnas: proporciones, glifos completos y preview/GIF a ${size}`, async ({ page }, testInfo) => {
