@@ -4,6 +4,8 @@
 
 Procesamiento 100 % local, sin cuentas, sin servidores y sin telemetría. Proyecto independiente inspirado en la idea y la estética técnica de [GitAscii](https://github.com/Igorcbraz/GitAscii); no modifica ni depende de su código.
 
+**Demo online:** [Abrir ASCII Motion Carousel en GitHub Pages](https://zwordup-sudo.github.io/ascii-motion-carousel/)
+
 ![Demostración: tres imágenes ASCII, cinco segundos cada una](./docs/demo/ascii-motion.gif)
 
 <sub>GIF real generado por la aplicación con tres figuras sintéticas locales. 320 × 320 px, tres fotogramas de cinco segundos y bucle infinito.</sub>
