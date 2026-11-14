@@ -46,7 +46,7 @@ Requisitos:
 - Un navegador Chromium actual para la aplicación. Para ejecutar los E2E se instala Chromium mediante Playwright.
 
 ```sh
-git clone https://github.com/<tu-usuario>/ascii-motion-carousel.git
+git clone https://github.com/zwordup-sudo/ascii-motion-carousel.git
 cd ascii-motion-carousel
 
 # Si utilizas nvm:
@@ -241,7 +241,7 @@ docs/v04/                  Diagnóstico previo, imágenes comparativas y métric
 
 ## Estado del proyecto
 
-**v1.0.0** consolida el editor autónomo local: carrusel, 16–300 columnas, 12 estilos, True Braille, secuencias Custom, procesamiento de fidelidad y exportación GIF. La primera publicación en GitHub está en preparación; no se ha creado ningún repositorio remoto ni se ha hecho push.
+**v1.0.0** está publicada en GitHub: [zwordup-sudo/ascii-motion-carousel](https://github.com/zwordup-sudo/ascii-motion-carousel). Consolida el editor autónomo local: carrusel, 16–300 columnas, 12 estilos, True Braille, secuencias Custom, procesamiento de fidelidad y exportación GIF.
 
 La aplicación no se ha integrado como widget en GitAscii y no se ha preparado un Pull Request contra ese proyecto.
 
