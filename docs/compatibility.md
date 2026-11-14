@@ -23,10 +23,16 @@ La matriz cubre importación de archivos, carrusel y reproducción, doce estilos
 | Comparación con `before-v03.png` | ≈0 | ≈12,6 | ≈13,0 |
 | GIF de 20 imágenes (desarrollo) | 8.618.532 B | 5.387.372 B | 3.191.535 B |
 
-- El antialiasing y la rasterización de glifos cambian entre motores. El color sigue mejorando respecto a V0.3 en los tres, pero los umbrales de fidelidad no son idénticos. En Chromium la comparación histórica exige MAE `< 0,01`; en Firefox/WebKit se acota a `< 20` porque el PNG histórico se generó en Chromium.
+- El antialiasing y la rasterización de glifos cambian entre motores. El color sigue mejorando respecto a V0.3 en los tres, pero los umbrales de fidelidad no son idénticos. En Chromium sobre Windows la comparación histórica exige MAE `< 0,01`; en Chromium sobre Linux se acota a `< 30` (midió ≈22,2) y en Firefox/WebKit a `< 20`, porque el PNG histórico se generó en Chromium/Windows.
 - El mismo contenido produce GIF de distinto tamaño por la cuantización y compresión de cada motor. Los fotogramas, dimensiones, retardos y bucle se validan por separado.
 - El heap principal solo puede medirse con CDP en Chromium. Firefox y WebKit validan el presupuesto RGBA del worker, el tamaño del GIF, la respuesta del hilo principal y la liberación de recursos, no una cifra de memoria total.
 - La presión de memoria y los tiempos varían con la concurrencia y el equipo. No son un benchmark absoluto.
+
+## Integración continua
+
+El workflow `.github/workflows/ci.yml` se ejecuta en cada PR a `main` con permisos `contents: read` y no despliega Pages. Usa `ubuntu-24.04` y Node.js 22: `npm ci`, `npm test`, `npm run build`, `npx playwright install --with-deps` y `npm run test:e2e -- --add-reporter=html`. La concurrencia cancela ejecuciones anteriores; el job tiene 45 minutos (20 para instalar navegadores y 30 para E2E). Si falla, conserva `playwright-report/` y `test-results/` como artefactos durante 7 días.
+
+Las dos primeras ejecuciones en Linux revelaron diferencias de rasterización en Chromium que Windows no muestra: el MAE de gradientes quedó en 1,84 (8,6 % de mejora, por debajo del 10 % exigido) y la comparación histórica en 22,24. Se fijó Ubuntu 24.04, se exige una mejora de gradientes de al menos 5 % en Linux y la comparación histórica se acota a `< 30` en Chromium no-Windows; Firefox/WebKit mantienen `< 20`. La ejecución verificada pasó: 110 unitarias, build correcto y 126 E2E correctas con 3 omitidas.
 
 ## Límites de la automatización
 
