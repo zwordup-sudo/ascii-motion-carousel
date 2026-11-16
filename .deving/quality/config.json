@@ -1,0 +1,56 @@
+{
+  "schema_version": 1,
+  "project": "ascii-motion-carousel",
+  "node": {
+    "major": 22,
+    "min_version": "22.12.0",
+    "max_major_exclusive": 23
+  },
+  "checks": [
+    {
+      "id": "unit",
+      "label": "Unitarias (Vitest)",
+      "kind": "npm-script",
+      "script": "test",
+      "result_format": "vitest-json",
+      "max_skips": 0,
+      "required": true,
+      "timeout_seconds": 300
+    },
+    {
+      "id": "build",
+      "label": "Compilación (TypeScript + Vite)",
+      "kind": "npm-script",
+      "script": "build",
+      "required": true,
+      "timeout_seconds": 300
+    },
+    {
+      "id": "e2e",
+      "label": "E2E desarrollo (Chromium, Firefox, WebKit)",
+      "kind": "npm-script",
+      "script": "test:e2e",
+      "required": true,
+      "timeout_seconds": 1200,
+      "max_skips": 3,
+      "skip_reason": "Captura histórica V0.3 protegida con CAPTURE_V03_BASELINE=1; una omisión por navegador",
+      "env": {
+        "CI": "1"
+      }
+    },
+    {
+      "id": "e2e-production",
+      "label": "E2E contra preview del build (local)",
+      "kind": "npm-script",
+      "script": "test:e2e",
+      "required": false,
+      "timeout_seconds": 1200,
+      "max_skips": 3,
+      "env": {
+        "CI": "1",
+        "E2E_PREVIEW": "1"
+      },
+      "skip_reason": "Captura histórica V0.3 protegida; no autoriza despliegue"
+    }
+  ]
+}

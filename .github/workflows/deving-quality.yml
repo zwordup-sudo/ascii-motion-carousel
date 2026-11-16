@@ -1,0 +1,88 @@
+name: DEVING Quality
+
+on:
+  pull_request:
+    branches: [main]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: deving-quality-${{ github.event.pull_request.number || github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  quality:
+    name: Quality Gate
+    runs-on: ubuntu-24.04
+    timeout-minutes: 55
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v7
+
+      - name: Set up Node.js 22
+        uses: actions/setup-node@v7
+        with:
+          node-version: '22'
+          cache: npm
+
+      - name: Check DEVING contract files and GGA policy
+        shell: bash
+        run: |
+          # Checkout includes only files versioned in the PR commit.
+          required=(
+            ".gga"
+            ".github/workflows/deving-quality.yml"
+            ".deving/quality/engine.mjs"
+            ".deving/quality/config.json"
+            ".deving/evidence/.gitignore"
+            "docs/DEVING-GGA-CI.md"
+            "docs/DEVING-GGA-RULES.md"
+            "docs/QUALITY-GATES.md"
+            "tests/deving-quality-smoke.mjs"
+          )
+          for file in "${required[@]}"; do
+            if [[ ! -f "$file" ]]; then
+              echo "::error file=$file::Required DEVING contract file is missing"
+              exit 1
+            fi
+          done
+          # Fail closed if the required review rules or strict mode were disabled.
+          tr -d '\r' < .gga | grep -Eq '^STRICT_MODE="true"$' || {
+            echo '::error file=.gga::GGA strict mode must remain enabled'
+            exit 1
+          }
+          tr -d '\r' < .gga | grep -Eq '^RULES_FILE="docs/DEVING-GGA-RULES.md"$' || {
+            echo '::error file=.gga::GGA must reference the versioned review rules'
+            exit 1
+          }
+          tr -d '\r' < .deving/evidence/.gitignore | grep -Fqx '*' || {
+            echo '::error file=.deving/evidence/.gitignore::Evidence files must be ignored'
+            exit 1
+          }
+          tr -d '\r' < .deving/evidence/.gitignore | grep -Fqx '!.gitignore' || {
+            echo '::error file=.deving/evidence/.gitignore::The ignore contract must retain itself'
+            exit 1
+          }
+
+      - name: Install locked project dependencies
+        run: npm ci
+
+      # Hermetic fixture tests of the DEVING engine. No production data or secrets.
+      - name: Test DEVING Quality Engine
+        run: node tests/deving-quality-smoke.mjs
+        timeout-minutes: 5
+
+      - name: Install Playwright browsers and OS dependencies
+        run: npx playwright install --with-deps
+        timeout-minutes: 20
+
+      # Includes unit, build, E2E development, and E2E against the local Vite preview.
+      # This does NOT publish to GitHub Pages or deploy elsewhere.
+      - name: Execute DEVING Quality Engine (local production preview)
+        run: node .deving/quality/engine.mjs run --project . --production
+        timeout-minutes: 35
+
+      # Deliberately do not upload .deving/evidence: logs may contain sensitive data.
+      # GitHub Actions retains step status and the engine's concise console summary.
